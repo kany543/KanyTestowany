@@ -199,6 +199,16 @@ def run_once(ctx: typer.Context, name: str = typer.Argument(..., help="Nazwa zad
     run_task(database, task, ctx.obj["data_dir"])
 
 
+@app.command("gui")
+def open_gui(ctx: typer.Context) -> None:
+    """Uruchom interfejs graficzny do zarzadzania zadaniami."""
+
+    from .gui import launch_gui
+
+    database: Database = ctx.obj["db"]
+    launch_gui(ctx.obj["data_dir"], database=database)
+
+
 @app.command("start")
 def start_scheduler(
     ctx: typer.Context,
