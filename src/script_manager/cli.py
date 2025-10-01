@@ -200,6 +200,7 @@ def run_once(ctx: typer.Context, name: str = typer.Argument(..., help="Nazwa zad
     run_task(database, task, ctx.obj["data_dir"])
 
 
+codex/add-update-script-for-main-branch
 @app.command("update")
 def update_application(
     repo_dir: Optional[Path] = typer.Option(
@@ -230,6 +231,16 @@ def update_application(
     if output:
         console.print(f"[dim]{output}[/dim]")
     console.print("[green]Aktualizacja zakonczona sukcesem.[/green]")
+=======
+@app.command("gui")
+def open_gui(ctx: typer.Context) -> None:
+    """Uruchom interfejs graficzny do zarzadzania zadaniami."""
+
+    from .gui import launch_gui
+
+    database: Database = ctx.obj["db"]
+    launch_gui(ctx.obj["data_dir"], database=database)
+main
 
 
 @app.command("start")
