@@ -14,6 +14,7 @@ from .config import APP_NAME, default_data_dir, ensure_data_dir
 from .db import Database
 from .runner import run_task
 from .scheduler_service import run_scheduler_loop
+from .updater import UpdateError, default_repository_root, update_repository
 
 console = Console()
 app = typer.Typer(help="Zarzadzanie harmonogramem uruchamiania skryptow Python.")
@@ -197,6 +198,38 @@ def run_once(ctx: typer.Context, name: str = typer.Argument(..., help="Nazwa zad
 
     console.print(f"[blue]Uruchamiam zadanie '{name}'...[/blue]")
     run_task(database, task, ctx.obj["data_dir"])
+
+
+@app.command("update")
+def update_application(
+    repo_dir: Optional[Path] = typer.Option(
+        None,
+        "--repo-dir",
+        help="Sciezka do repozytorium aplikacji (domyslnie katalog projektu)",
+    ),
+    branch: str = typer.Option("main", "--branch", help="Nazwa brancha do pobrania"),
+    force: bool = typer.Option(
+        False,
+        "--force",
+        help="Wymus nadpisanie lokalnych zmian (git reset --hard).",
+    ),
+) -> None:
+    """Zaktualizuj aplikacje do najnowszej wersji z wybranego brancha."""
+
+    target_dir = repo_dir.expanduser().resolve() if repo_dir else default_repository_root()
+    console.print(
+        f"[blue]Aktualizuje repozytorium {target_dir} z brancha '{branch}'...[/blue]"
+    )
+
+    try:
+        output = update_repository(target_dir, branch=branch, force=force)
+    except UpdateError as exc:
+        console.print(f"[red]Aktualizacja nie powiodla sie: {exc}[/red]")
+        raise typer.Exit(code=1)
+
+    if output:
+        console.print(f"[dim]{output}[/dim]")
+    console.print("[green]Aktualizacja zakonczona sukcesem.[/green]")
 
 
 @app.command("start")
