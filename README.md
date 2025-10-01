@@ -12,4 +12,5 @@ python script_manager_gui.py
 
 - Lista aktualnie zdefiniowanych skryptów.
 - Formularz do dodawania nowych skryptów (nazwa, polecenie, opis).
+- Możliwość usunięcia wybranego skryptu z listy.
 - Automatyczne zapisywanie danych w pliku `scripts.json`.
